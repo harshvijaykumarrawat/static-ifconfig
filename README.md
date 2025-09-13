@@ -16,8 +16,12 @@ Supports both modern **NetworkManager** (Bookworm and later) and legacy **dhcpcd
 
 ## 📦 Installation
 
-Build and install the `.deb` package:
+### 🔹 Download prebuilt `.deb`
+You can download the package directly from GitHub Pages:
+
+[➡️ Download static-ifconfig_0.1-1_all.deb](https://harshvijaykumarrawat.github.io/static-ifconfig/build/static-ifconfig_0.1-1_all.deb)
+
+Then install it on your Pi:
 ```bash
-git clone https://github.com/<your-username>/static-ifconfig.git
-cd static-ifconfig
-dpkg -i build/static-ifconfig_0.1-1_all.deb
+wget https://harshvijaykumarrawat.github.io/static-ifconfig/build/static-ifconfig_0.1-1_all.deb
+sudo dpkg -i static-ifconfig_0.1-1_all.deb
