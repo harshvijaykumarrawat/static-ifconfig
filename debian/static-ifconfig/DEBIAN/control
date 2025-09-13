@@ -1,0 +1,11 @@
+Package: static-ifconfig
+Version: 0.1-1
+Architecture: all
+Maintainer: Your Name <you@example.com>
+Installed-Size: 12
+Depends: iproute2, net-tools, ipcalc
+Section: net
+Priority: optional
+Homepage: https://github.com/yourname/static-ifconfig
+Description: Simple static IP configurator
+ Tool to create, list, and remove static IP configs for Debian interfaces.

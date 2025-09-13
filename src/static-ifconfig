@@ -1,0 +1,138 @@
+#!/usr/bin/env bash
+# static-ifconfig for Raspberry Pi boards
+# Uses NetworkManager (Bookworm+) or dhcpcd (Bullseye/Buster)
+set -euo pipefail
+
+DHCPCD_CONF="/etc/dhcpcd.conf"
+
+bail() { echo "ERROR: $*" >&2; exit 1; }
+
+# Detect Raspberry Pi hardware
+is_rpi() {
+  if grep -qi "raspberry pi" /proc/device-tree/model 2>/dev/null; then
+    return 0
+  fi
+  return 1
+}
+
+is_nm_active() {
+  systemctl is-active --quiet NetworkManager 2>/dev/null
+}
+
+nm_set_static() {
+  local IFACE="$1" IP="$2" ROUTER="$3" DNS="$4"
+  local CONN
+  CONN=$(nmcli -t -f NAME,DEVICE con show --active | awk -F: -v i="$IFACE" '$2==i{print $1; exit}')
+  [ -z "$CONN" ] && bail "No active NetworkManager connection for $IFACE"
+
+  nmcli con mod "$CONN" ipv4.addresses "$IP" \
+                        ipv4.gateway "$ROUTER" \
+                        ipv4.dns "$DNS" \
+                        ipv4.method manual
+  nmcli con up "$CONN"
+  echo "✅ Set static IP for $IFACE via NetworkManager ($CONN)"
+}
+
+nm_remove_static() {
+  local IFACE="$1"
+  local CONN
+  CONN=$(nmcli -t -f NAME,DEVICE con show --active | awk -F: -v i="$IFACE" '$2==i{print $1; exit}')
+  [ -z "$CONN" ] && bail "No active NetworkManager connection for $IFACE"
+
+  nmcli con mod "$CONN" ipv4.method auto ipv4.addresses "" ipv4.gateway "" ipv4.dns ""
+  nmcli con up "$CONN"
+  echo "✅ Reset $IFACE to DHCP via NetworkManager ($CONN)"
+}
+
+nm_list() {
+  nmcli -f NAME,DEVICE,IP4.ADDRESS,IP4.GATEWAY con show --active
+}
+
+dhcpcd_set_static() {
+  local IFACE="$1" IP="$2" ROUTER="$3" DNS="$4"
+  cp -a "$DHCPCD_CONF" "$DHCPCD_CONF.bak.$(date +%s)" || true
+  awk -v iface="$IFACE" 'BEGIN{skip=0} {
+    if ($0 ~ ("^interface[[:space:]]+"iface"$")) { skip=1; next }
+    if (skip && $0 ~ "^interface[[:space:]]+") { skip=0 }
+    if (skip) next
+    print
+  }' "$DHCPCD_CONF" > "$DHCPCD_CONF.tmp" && mv "$DHCPCD_CONF.tmp" "$DHCPCD_CONF"
+
+  cat <<EOF >> "$DHCPCD_CONF"
+
+interface $IFACE
+static ip_address=$IP
+static routers=$ROUTER
+static domain_name_servers=$DNS
+EOF
+  systemctl restart dhcpcd || echo "⚠️ Reboot required for dhcpcd changes"
+  echo "✅ Set static IP for $IFACE via dhcpcd.conf"
+}
+
+dhcpcd_remove_static() {
+  local IFACE="$1"
+  cp -a "$DHCPCD_CONF" "$DHCPCD_CONF.bak.$(date +%s)" || true
+  awk -v iface="$IFACE" 'BEGIN{skip=0} {
+    if ($0 ~ ("^interface[[:space:]]+"iface"$")) { skip=1; next }
+    if (skip && $0 ~ "^interface[[:space:]]+") { skip=0 }
+    if (skip) next
+    print
+  }' "$DHCPCD_CONF" > "$DHCPCD_CONF.tmp" && mv "$DHCPCD_CONF.tmp" "$DHCPCD_CONF"
+  systemctl restart dhcpcd || echo "⚠️ Reboot required for dhcpcd changes"
+  echo "✅ Reset $IFACE to DHCP via dhcpcd.conf"
+}
+
+dhcpcd_list() {
+  awk '/^interface /{printf("\n%s\n",$0); f=1; next} f{ if($0==""){f=0} else print "  "$0 }' "$DHCPCD_CONF" || echo "(none)"
+}
+
+usage() {
+  cat <<EOF
+Usage:
+  static-ifconfig -c <iface> <ip_address>/<prefix> [router] [dns]
+      Example: static-ifconfig -c eth0 192.168.1.222/24 192.168.1.1 8.8.8.8
+
+  static-ifconfig -r <iface>
+      Remove static config (revert to DHCP).
+
+  static-ifconfig -l
+      List current configs.
+EOF
+}
+
+main() {
+  if ! is_rpi; then
+    echo "⚠️  Warning: Not detected as a Raspberry Pi, continuing anyway..."
+  fi
+
+  case "${1:-}" in
+    -c)
+      [ $# -ge 3 ] || usage
+      IFACE=$2; IP=$3; ROUTER=${4:-192.168.1.1}; DNS=${5:-8.8.8.8}
+      if is_nm_active; then
+        nm_set_static "$IFACE" "$IP" "$ROUTER" "$DNS"
+      else
+        dhcpcd_set_static "$IFACE" "$IP" "$ROUTER" "$DNS"
+      fi
+      ;;
+    -r)
+      [ $# -ge 2 ] || usage
+      IFACE=$2
+      if is_nm_active; then
+        nm_remove_static "$IFACE"
+      else
+        dhcpcd_remove_static "$IFACE"
+      fi
+      ;;
+    -l)
+      if is_nm_active; then
+        nm_list
+      else
+        dhcpcd_list
+      fi
+      ;;
+    *) usage ;;
+  esac
+}
+
+main "$@"

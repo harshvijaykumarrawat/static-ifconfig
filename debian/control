@@ -1,0 +1,13 @@
+Source: static-ifconfig
+Section: net
+Priority: optional
+Maintainer: Your Name <you@example.com>
+Build-Depends: debhelper (>= 9)
+Standards-Version: 4.1.1
+Homepage: https://github.com/yourname/static-ifconfig
+
+Package: static-ifconfig
+Architecture: all
+Depends: ${misc:Depends}, iproute2, net-tools, ipcalc
+Description: Simple static IP configurator
+ Tool to create, list, and remove static IP configs for Debian interfaces.

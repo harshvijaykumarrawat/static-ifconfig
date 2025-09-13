@@ -1,0 +1,65 @@
+ dpkg-buildpackage -us -uc -ui
+dpkg-buildpackage: info: source package static-ifconfig
+dpkg-buildpackage: info: source version 0.1-1
+dpkg-buildpackage: info: source distribution stable
+dpkg-buildpackage: info: source changed by Your Name <you@example.com>
+ dpkg-source --before-build .
+dpkg-buildpackage: info: host architecture arm64
+ debian/rules clean
+dh clean
+dh: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_clean
+dh_clean: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+ dpkg-source -b .
+dpkg-source: warning: no source format specified in debian/source/format, see dpkg-source(1)
+dpkg-source: warning: native package version may not have a revision
+dpkg-source: warning: source directory 'static-ifconfig' is not <sourcepackage>-<upstreamversion> 'static-ifconfig-0.1'
+dpkg-source: info: using source format '1.0'
+dpkg-source: info: building static-ifconfig in static-ifconfig_0.1-1.tar.gz
+dpkg-source: info: building static-ifconfig in static-ifconfig_0.1-1.dsc
+ debian/rules build
+dh build
+dh: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_update_autotools_config
+ debian/rules binary
+dh binary
+dh: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_testroot
+   dh_prep
+   dh_auto_install --destdir=debian/static-ifconfig/
+dh_auto_install: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_install
+dh_install: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_installdocs
+dh_installdocs: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_installchangelogs
+dh_installchangelogs: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_perl
+   dh_link
+   dh_strip_nondeterminism
+   dh_compress
+dh_compress: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_fixperms
+   dh_missing
+dh_missing: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_installdeb
+dh_installdeb: warning: Compatibility levels before 10 are deprecated (level 9 in use)
+   dh_gencontrol
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package 'static-ifconfig' in '../static-ifconfig_0.1-1_all.deb'.
+ dpkg-genbuildinfo -O../static-ifconfig_0.1-1_arm64.buildinfo
+ dpkg-genchanges -O../static-ifconfig_0.1-1_arm64.changes
+dpkg-genchanges: info: including full source code in upload
+ dpkg-source --after-build .
+dpkg-buildpackage: info: full upload; Debian-native package (full source is included)
+Now running lintian static-ifconfig_0.1-1_arm64.changes ...
+running with root privileges is not recommended!
+E: static-ifconfig source: malformed-debian-changelog-version 0.1-1 (for native) [debian/changelog:1]
+E: static-ifconfig: no-copyright-file
+W: static-ifconfig: initial-upload-closes-no-bugs [usr/share/doc/static-ifconfig/changelog.Debian.gz:1]
+W: static-ifconfig source: missing-debian-source-format
+W: static-ifconfig source: no-debian-copyright-in-source
+W: static-ifconfig: no-manual-page [usr/bin/static-ifconfig]
+W: static-ifconfig source: package-uses-deprecated-debhelper-compat-version 9
+Finished running lintian.

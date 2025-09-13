@@ -1,0 +1,31 @@
+Format: 1.8
+Date: Sat, 13 Sep 2025 19:00:00 +0530
+Source: static-ifconfig
+Binary: static-ifconfig
+Architecture: source all
+Version: 0.1-1
+Distribution: stable
+Urgency: medium
+Maintainer: Your Name <you@example.com>
+Changed-By: Your Name <you@example.com>
+Description:
+ static-ifconfig - Simple static IP configurator
+Changes:
+ static-ifconfig (0.1-1) stable; urgency=medium
+ .
+   * Initial release.
+Checksums-Sha1:
+ bd58cf82238cc21a97fd836c398c5b9b463d8f25 586 static-ifconfig_0.1-1.dsc
+ 72d2867af90cab61d07ee04859e8148e049cf5b3 2125 static-ifconfig_0.1-1.tar.gz
+ 1aa5fe45c12ea07307aab6051a3dd224d97eec88 2496 static-ifconfig_0.1-1_all.deb
+ 56f75a50d5a4c8744fd0b8a296e4df0125b9e4bf 5350 static-ifconfig_0.1-1_arm64.buildinfo
+Checksums-Sha256:
+ 90870f35ea4c0add9f9e2b7098ad938546746c1e02e8b92e811a221aa457c0f4 586 static-ifconfig_0.1-1.dsc
+ 4d4f176cb62bf227ef5aad9d4eeefb670f3e069f1d594c7ff63529becb4a0c9d 2125 static-ifconfig_0.1-1.tar.gz
+ 23ab0d3a4372982c9c2ef0bf2b4ea4062fb732c2867899870a879bc5dd04d8bb 2496 static-ifconfig_0.1-1_all.deb
+ c04dbf0ff76c6f2dfe0563448d97e53c75b88ebe6ac46fadd97e1aa03f38e5ae 5350 static-ifconfig_0.1-1_arm64.buildinfo
+Files:
+ d21e6ea9807a5ab5f403fab3209681fe 586 net optional static-ifconfig_0.1-1.dsc
+ 5aca13f1444fbe365db07184d333651e 2125 net optional static-ifconfig_0.1-1.tar.gz
+ bae61dfd9a2d1e8cfc3e484a075ee129 2496 net optional static-ifconfig_0.1-1_all.deb
+ e0fa8cc11b1e8d59f835b0c5c47cf7cb 5350 net optional static-ifconfig_0.1-1_arm64.buildinfo
